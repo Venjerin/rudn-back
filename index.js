@@ -3,17 +3,15 @@ import mongoose from "mongoose";
 import multer from 'multer';
 import cors from 'cors';
 import * as UserController from "./controllers/UserController.js";
+import * as ApplicationController from "./controllers/ApplicationController.js";
 import checkAuth from "./utils/checkAuth.js";
 import handleValidationErrors from "./utils/handleValidationErrors.js";
-import { registerValidation, loginValidation } from "./validations.js";
+import { registerValidation, loginValidation, applicationValidation } from "./validations.js";
 
-const db = "mongodb+srv://user:12345@cluster0.xo0ojo1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const db = "mongodb+srv://user:12345@cluster0.xo0ojo1.mongodb.net/rudn?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose
-  .connect(db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(db)
   .then(() => {
     console.log("MongoDB is connected");
   })
@@ -44,6 +42,7 @@ app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
 app.post("/auth/login", loginValidation, handleValidationErrors, UserController.login);
 app.post("/auth/register", registerValidation, handleValidationErrors, UserController.register);
 app.get("/auth/me", checkAuth, UserController.getMe);
+app.post('/application', checkAuth, applicationValidation, handleValidationErrors, ApplicationController.create)
 
 app.listen(4444, (err) => {
   if (err) {

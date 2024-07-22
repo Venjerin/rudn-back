@@ -7,6 +7,7 @@ import * as ApplicationController from "./controllers/ApplicationController.js";
 import checkAuth from "./utils/checkAuth.js";
 import handleValidationErrors from "./utils/handleValidationErrors.js";
 import { registerValidation, loginValidation, applicationValidation } from "./validations.js";
+import { googleService } from "./controllers/GoogleController.js";
 
 const db = "mongodb+srv://user:12345@cluster0.xo0ojo1.mongodb.net/rudn?retryWrites=true&w=majority&appName=Cluster0";
 
@@ -43,6 +44,21 @@ app.post("/auth/login", loginValidation, handleValidationErrors, UserController.
 app.post("/auth/register", registerValidation, handleValidationErrors, UserController.register);
 app.get("/auth/me", checkAuth, UserController.getMe);
 app.post('/application', checkAuth, applicationValidation, handleValidationErrors, ApplicationController.create)
+
+app.get('/oauth-callback-google', async (req, res) => {
+  console.log("Callback URL hit"); 
+  const code = req.query.code;
+  try {
+    await googleService.init();
+    const userData = await googleService.loginGoogleUser(code);
+    console.log('Stage 2')
+    // Делаем что-то с userData (например, сохраняем в базе данных или передаем на фронтенд)
+    res.json(userData); // Возвращаем данные пользователя как JSON
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Failed to authenticate with Google');
+  }
+});
 
 app.listen(4444, (err) => {
   if (err) {

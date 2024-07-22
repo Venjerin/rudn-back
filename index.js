@@ -52,8 +52,7 @@ app.get('/oauth-callback-google', async (req, res) => {
     await googleService.init();
     const userData = await googleService.loginGoogleUser(code);
     console.log('Stage 2')
-    // Делаем что-то с userData (например, сохраняем в базе данных или передаем на фронтенд)
-    res.json(userData); // Возвращаем данные пользователя как JSON
+    res.json(userData); 
   } catch (error) {
     console.error(error);
     res.status(500).send('Failed to authenticate with Google');
